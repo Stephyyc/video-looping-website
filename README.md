@@ -1,13 +1,9 @@
 # Video-Looping-Website
-TL;DR: A music practicing tool for musicians made with HTML, CSS, Javascript, and JQuery, that allows users to choose sections of the site to replay on repeat with different playback speeds.
+TL;DR: This is an in-progress music practicing tool for musicians made with HTML, CSS, Javascript, and JQuery, that allows users to learn music off of Youtube videos. They choose their own video, then practice sections of the video by replaying on repeat with different playback speeds.
 
 Made with @mwz210.
 
-# Functionality
-
-This is an in-progress webpage for users that want to learn how to play music from videos more efficiently and effectively.
-
-## Steps: 
+# Steps: 
 - Upload a video of your choice by pasting a Youtube link to the video (TBD)
 - Add sections of the video you'd like to practice 
 - Practice those sections on repeat, from .25x playback speed to 2.0x playback speed. 
