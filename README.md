@@ -13,4 +13,4 @@ Made with @mwz210.
 # Installation:
 This project is still in progress and uses a sample video on my local computer. If you want to try it out, for now, you could insert your video of choice into the HTML -- but don't worry, dynamical video loading functionality will come later! 
 
-Note: This project is not fully functional across all platforms or browsers. Currently, the webpage works best on Edge or Chrome browser. I'm looking into why this is the case, and hope to make it functional across all platforms.
+Note: This project is not fully functional across all platforms or browsers. Currently, the webpage works best on Edge or Chrome browser. I'm looking into why this is the case, and hope to make it functional across all browsers. Also, making this website responsive on phone/table is on my radar!
