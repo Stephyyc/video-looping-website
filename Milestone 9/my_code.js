@@ -1,5 +1,4 @@
 $(document).ready(function() {
-  window.HELP_IMPROVE_VIDEOJS = false;
 
   var player = videojs('#demo_video');
   $(".background").hide();
@@ -24,59 +23,30 @@ $(document).ready(function() {
   var realCreateCountdown = _.throttle(createCountdown, 6000);
   var threeCreateCountdown = _.throttle(createThreeSecCountdown, 4000);
   var prevention = _.throttle(function(){prevent = true;}, 2000);
-  //var throttleOnMarkerReached = _.throttle(player.markers.onMarkerReached, 2000);
-
-  //setInterval(throttleOnMarkerReached, 2000);
 
   var doNotLetItGoBack = _.throttle(function(){
     doNotGoBack = false;
   }, 1000);
   var add_marker = false;
+
 //===========================================================================================================
+// 
+// Checklist Logic
+// 
 
-function updateCheckBox(headerCB) {
-	var table = document.querySelector('table');
-	var headerCheckbox = table.querySelector('thead .mdl-data-table__select input');
-	var boxes = table.querySelectorAll('tbody .mdl-data-table__select');
-	var rows = table.querySelectorAll('tbody tr');
-	if (headerCB.checked) {
-		for (let i = 0, length = boxes.length; i < length; i++) {
-			boxes[i].MaterialCheckbox.check();
-			//rows[i].classList.add('checked');
-		}
-	} else {
-		for (let i = 0, length = boxes.length; i < length; i++) {
-			boxes[i].MaterialCheckbox.uncheck();
-			//rows[i].classList.remove('checked');
-		}
-	}
-}
-// Function to delete all rows that have the checkbox checked
+// Calls removeRow()
+// TODO: find a better way to remove ways than this...
+setInterval(function() {
+  removeRow();
+}, 300);
 
-function rowRemoveAll() {
+// Removes a single row from the checklist
+function removeRow() {
 	var table = document.querySelector('table'); //get reference  of the table
 	var boxes = table.querySelectorAll('tbody .mdl-data-table__select'); // get reference of checkbox elements as a list
 	var rows = table.querySelectorAll('tbody tr'); // target rows in table body
-	//alert (boxes[2].MaterialCheckbox.inputElement_.checked.toString ())
-	for (let i = 0, length = rows.length; i < length; i++) {
-		// let tempele =boxes[i];
-    var string = "#" + rows[i].id.toString();
-    $(string).hide('slow', function(){
-      $(string).off;
-      rows[i].remove();
-    });
-      //rows[i].remove();
-       // remove its corresponding row
-	}
-}
 
-function rowRemove() {
-	var table = document.querySelector('table'); //get reference  of the table
-	var boxes = table.querySelectorAll('tbody .mdl-data-table__select'); // get reference of checkbox elements as a list
-	var rows = table.querySelectorAll('tbody tr'); // target rows in table body
-	//alert (boxes[2].MaterialCheckbox.inputElement_.checked.toString ())
 	for (let i = 0, length = rows.length; i < length; i++) {
-		// let tempele =boxes[i];
 		if (boxes[i].MaterialCheckbox.inputElement_.checked) // if checkbox is checked
 		{
       var string = "#" + rows[i].id.toString();
@@ -84,13 +54,27 @@ function rowRemove() {
         $(string).off;
         rows[i].remove();
       });
-      //rows[i].remove();
-		} // remove its corresponding row
+		} 
 	}
 }
-//Add a Contact
-function freshUpdate(start, end, section) {
-	var listContainer = document.getElementById('features-list');
+
+// Remove all rows from the checklist 
+function removeAllRows() {
+	var table = document.querySelector('table'); //get reference  of the table
+	var boxes = table.querySelectorAll('tbody .mdl-data-table__select'); // get reference of checkbox elements as a list
+	var rows = table.querySelectorAll('tbody tr'); // target rows in table body
+	for (let i = 0, length = rows.length; i < length; i++) {
+    var string = "#" + rows[i].id.toString();
+    $(string).hide('slow', function(){
+      $(string).off;
+      rows[i].remove();
+    });
+	}
+}
+
+// Add a video segment to the checklist
+function addPracticeSection(start, end, section) {
+  var listContainer = document.getElementById('features-list');
 	var tmptr;
 	var tmptd;
 	var tmplabel;
@@ -139,18 +123,10 @@ function freshUpdate(start, end, section) {
 	listContainer.appendChild(tmptr);
 }
 
-function addPerson(start_time, end_time, color) {
-	//alert(document.getElementById('fullName').value)
-	freshUpdate(start_time, end_time, color);
-	//document.getElementById('fullName').reset();
-	//	document.getElementById('email').value = "";
-	return false;
-}
-
-
 //===========================================================================================================
-// Snackbar upon adding a marker, you can also undo the action
-
+// 
+// Logic for snackbar upon adding a marker.
+//
 (function() {
   'use strict';
   var snackbarContainer = document.querySelector('#demo-snackbar-example');
@@ -158,20 +134,29 @@ function addPerson(start_time, end_time, color) {
   var addBreakpointCT = document.querySelector('.add-marker');
 
   var handler = function(event) {
-    var bool = player.markers.removeMarkerOne(last_time);
-    if (start_end.innerText == "ADD START MARKER" && bool == true){
+
+    /// This changes the text and color of the add marker button from START<->END, Green<->Yellow 
+
+    // Removes the previously placed marker 
+    player.markers.removePreviousMarker(last_time);
+
+    // Changes the marker's text from start to end, color from green to yellow 
+    if (start_end.innerText == "ADD START MARKER"){
       start_end.innerHTML = "ADD END MARKER";
       document.getElementById("add-marker").style.backgroundColor = "yellow";
       document.getElementById("description").innerHTML = "Add the end of the section you will loop and practice!";
       half_section = true;
       color = last_color.replace("special-", "");
     }
-    else if (bool == true){
+
+    // Changes the marker's text from end to start, color from yellow to green 
+    else {
       start_end.innerHTML = "ADD START MARKER";
       document.getElementById("add-marker").style.backgroundColor = "#5FAD46";
       document.getElementById("description").innerHTML = "Add the start of the section you will loop and practice!";
     }
   };
+  // Logic for actually displaying the snackbar 
   showSnackbarButton.addEventListener('click', function() {
     'use strict';
 
@@ -187,41 +172,33 @@ function addPerson(start_time, end_time, color) {
 
 
 //=============================================================================================================
-
-// Adjust playback speeds
+//
+/// Adjust playback speeds
+//
 
 var playbackSpeeds = [.25, .5, .75, 1.0, 1.25, 1.5, 1.75, 2.0]
 
 $(".slower").click(function(){
   currentSpeed = document.getElementById("current-speed");
-
   if (player.playbackRate() == .25) {
-    console.log("playback");
     alert("Can't get any slower!");
   }
-
   for (var i = playbackSpeeds.length - 1; i >= 0 ; i--) {
     var speed = playbackSpeeds[i];
 
     if (speed < player.playbackRate()) {
       player.playbackRate(speed);
       currentSpeed.innerHTML = "" + speed;
-
       return;
     }
   }
-
-
 });
 
 $(".faster").click(function(){
   currentSpeed = document.getElementById("current-speed");
-
   if (player.playbackRate() == 2.0) {
-    console.log("playback");
     alert("Can't get any faster!");
   }
-
   for (var i = 0; i < playbackSpeeds.length ; i++) {
     var speed = playbackSpeeds[i];
 
@@ -233,8 +210,11 @@ $(".faster").click(function(){
   }
 });
 //=============================================================================================================
-// Handling auto-loop
+//
+/// Toggles to switch auto-loop and auto-countdown 
+//
 
+// Handling auto-loop
 $("#switch-1").change(function(){
   if(!$(this).is(':checked')) {
     autoLoop = false;
@@ -242,12 +222,9 @@ $("#switch-1").change(function(){
   else {
     autoLoop = true;
   }
-
 });
 
-//=============================================================================================================
-// Handling auto-Countdown
-
+// Handling auto-countdown
 $("#switch-2").change(function(){
   if(!$(this).is(':checked')) {
     autoCountdown = false;
@@ -259,8 +236,12 @@ $("#switch-2").change(function(){
 });
 
 //=============================================================================================================
-// Performance mode / User Goal
+//
+/// Performance mode / User Goal
+//
 
+// TODO: Are we keeping the performance mode? 
+/*
 $("#switch-3").change(function() {
   var elems = document.getElementsByClassName("to-disable");
   var toggle1 = document.getElementById('switch-1');
@@ -317,12 +298,12 @@ $("#switch-3").change(function() {
     player.exitFullscreen();
   }
   });
-
-
-
-
-
+*/
 //=============================================================================================================
+//
+/// Keyboard shortcuts
+//
+
 window.addEventListener('keyup', function (e) {
     // Press spacebar to Play/Pause.
     if (e.keyCode == 32 || e.which == 32) {
@@ -335,78 +316,45 @@ window.addEventListener('keyup', function (e) {
             player.pause();
         }
     }
+
+    // Pressing 'b' to create a new marker
+    // TODO: do we want to keep this? 
     else if (e.which == 66 || e.keyCode == 66){
       doNotGoBack = true;
       createNewMarker(player.currentTime());
       last_time = player.currentTime();
       last_color = player.markers.findColor(last_time);
       last_color.replace("special-", "");
+
+      // TODO: this is repeated in many places. Let's make a function for this.
       if (start_end.innerText == "ADD START MARKER"){
         start_end.innerHTML = "ADD END MARKER";
         document.getElementById("add-marker").style.backgroundColor = "yellow";
         document.getElementById("description").innerHTML = "Add the end of the section you will loop and practice!";
-        //$("#yo").append("<tr> <td class='mdl-data-table__cell--non-numeric " + last_color + "'>" + last_time + "</td><td id='"
-        //+ last_color + "-change'>90</td><td>"+ last_color + "</td></tr>");
       }
 
+      // TODO: same as above.
       else{
         start_end.innerHTML = "ADD START MARKER";
         document.getElementById("add-marker").style.backgroundColor = "#5FAD46";
         document.getElementById("description").innerHTML = "Add the start of the section you will loop and practice!";
-        //document.getElementById("red-change").innerHTML = Math.round(last_time).toString();
       }
+
+      // TODO: this section is also repeated
+      // If there was already one incomplete marker, then make section=true
       if (half_section == true){
         start_time = last_time;
         section = true;
       }
+      // If there were no incomplete markers, then make half_section=true
       else if(half_section == false && section == true){
         temp_color = last_color.replace('special-', "");
-
-        addPerson(Math.round(start_time), Math.round(last_time), temp_color);
+        
+        // Add a new row in the table 
+        addPracticeSection(Math.round(start_time), Math.round(last_time), temp_color);
         section = false;
       }
     }
-    else if (e.which == 82 || e.keyCode == 82){
-      var markerList = player.markers.getMarkers();
-      doNotGoBack = true;
-      var alreadyFalse = true;
-      if (autoCountdown == true){
-        autoCountdown = false;
-        alreadyFalse = false;
-      }
-      var timeGoneTo;
-      var timeBefore = player.currentTime();
-      player.on("seeked", function() {
-        timeGoneTo = player.currentTime();
-        player.currentTime(timeBefore);
-        doNotGoBack = true;
-        var num = player.markers.removeMarker(timeGoneTo)
-        if (num == 1 || num == 2){
-          //player.pause();
-          if (half_section == false){
-            start_end.innerHTML = "ADD START MARKER";
-            document.getElementById("add-marker").style.backgroundColor = "#5FAD46";
-            document.getElementById("description").innerHTML = "Add the start of the section you will loop and practice!";
-          }
-          else {
-            if (check_curr_color()){
-              start_end.innerHTML = "ADD START MARKER";
-              document.getElementById("add-marker").style.backgroundColor = "#5FAD46";
-              document.getElementById("description").innerHTML = "Add the start of the section you will loop and practice!";
-            }
-            else{
-              start_end.innerHTML = "ADD END MARKER";
-              document.getElementById("add-marker").style.backgroundColor = "yellow";
-              document.getElementById("description").innerHTML = "Add the end of the section you will loop and practice!";
-            }
-          }
-        }
-        player.off("seeked");
-        if (!alreadyFalse){
-          autoCountdown = true;
-        }
-    });
-  }
 }); // End keypress().
   //==========================================================================================================
 
@@ -505,7 +453,7 @@ window.addEventListener('keyup', function (e) {
   // different button clicks
 
   $(".done").click(function(){
-    rowRemoveAll();
+    removeAllRows();
     player.markers.removeAll();
     var dialog = document.querySelector('dialog');
     var showDialogButton = document.querySelector('#show-dialog');
@@ -572,10 +520,12 @@ window.addEventListener('keyup', function (e) {
     });
   });
 
-  // Create magenta marker
+  /// Create magenta marker
   $(".add-bookmark-here").click(function(){
     doNotGoBack = true;
     createNewMarker(player.currentTime());
+
+  // @param last_time = the time of the last placed marker of the user 
     last_time = player.currentTime();
     last_color = player.markers.findColor(last_time);
     last_color.replace("special-", "");
@@ -600,7 +550,7 @@ window.addEventListener('keyup', function (e) {
     else if(half_section == false && section == true){
       temp_color = last_color.replace('special-', "");
 
-      addPerson(Math.round(start_time), Math.round(last_time), temp_color);
+      addPracticeSection(Math.round(start_time), Math.round(last_time), temp_color);
       section = false;
     }
 
@@ -819,11 +769,6 @@ window.addEventListener('keyup', function (e) {
         player.exitFullscreen();
       }
     }, .000000000001);
-
-
-setInterval(function() {
-    rowRemove();
-}, 300);
 
 //===========================================================================================================
 
