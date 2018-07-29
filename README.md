@@ -11,5 +11,5 @@ Made with @mwz210.
 - Revel in your new skills (´･ω･`)
 
 # Installation:
- Project is still in progress and have only gotten all the functionality of the video controls done. However, there isn't an easy way to upload and practice with your own video. If you are really interested in using it then be willing to download all the files in MKV Practice Tool Folder and then switch your own video with the sample video that is provided in the folder. Just make sure you name the video the same name as the sample video since that part is hard coded for now.
- Note: This project is not fully functional across all platforms or browsers. Currently, the webpage works best on Edge or Chrome browser. I'm looking into why this is the case, and hope to make it functional across all platforms.
+This project is still in progress and uses a sample video on my local computer. If you want to try it out, for now, you could insert your video of choice into the HTML -- but don't worry, dynamical video loading functionality will come later! 
+Note: This project is not fully functional across all platforms or browsers. Currently, the webpage works best on Edge or Chrome browser. I'm looking into why this is the case, and hope to make it functional across all platforms.
